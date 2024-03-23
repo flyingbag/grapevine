@@ -1,0 +1,16 @@
+{
+  "inputSpec": "openapi.yaml",
+  "generatorName": "csharp",
+  "outputDir": "WebApp",
+  "excludeTests": true,
+  "isLibrary": true,
+  "library": "httpclient",
+  "nullableReferenceTypes": false,
+  "packageAuthors": "Gao Yang (a.k.a. flyingbag)",
+  "packageName": "WebApp",
+  "packageTitle": "Web App",
+  "requestParameterGeneration": true,
+  "supportsAsync": false,
+  "targetFramework": "net48",
+  "validatable": false
+}

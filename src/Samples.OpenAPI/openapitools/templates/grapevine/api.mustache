@@ -1,0 +1,45 @@
+{{>partial_header}}
+
+using System.IO;
+using System.Threading.Tasks;
+using Grapevine;
+using Newtonsoft.Json;
+using {{packageName}}.Client;
+{{#hasImport}}using {{packageName}}.{{modelPackage}};
+{{/hasImport}}
+
+namespace {{packageName}}.{{apiPackage}}
+{
+    {{#operations}}
+    /// <summary>
+    /// {{description}}
+    /// </summary>
+    [RestResource()]
+    {{>visibility}} {{#isLibrary}}abstract {{/isLibrary}}class {{classname}}
+    {
+        {{#operation}}
+        /// <summary>
+        /// {{summary}}
+        /// </summary>
+        [RestRoute("{{{httpMethod}}}", "{{{path}}}", Name = "{{{summary}}}", Description = "{{{description}}}")]
+        public {{#isLibrary}}abstract{{/isLibrary}}{{^isLibrary}}async{{/isLibrary}} Task {{operationId}}(IHttpContext context){{#isLibrary}};{{/isLibrary}}{{^isLibrary}}
+        {
+            {{#bodyParam}}
+            var streamReader = new StreamReader(context.Request.InputStream);
+            var jsonReader = new JsonTextReader(streamReader);
+            var serializer = new JsonSerializer();
+            var body = serializer.Deserialize<{{dataType}}>(jsonReader);
+            {{/bodyParam}}
+            // TODO: Implement your operation here.
+            {{#returnType}}
+            string exampleJson = null;
+            {{#examples}}
+            exampleJson = "{{{example}}}";
+            {{/examples}}
+            {{/returnType}}
+            await context.Response.SendResponseAsync({{#returnType}}exampleJson{{/returnType}}{{^returnType}}"OK"{{/returnType}});
+        }{{/isLibrary}}
+        {{/operation}}
+    }
+   {{/operations}}
+}

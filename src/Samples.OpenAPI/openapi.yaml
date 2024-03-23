@@ -1,0 +1,36 @@
+openapi: 3.0.2
+info:
+  title: Web App API
+  version: 1.0.0
+servers:
+- url: http://localhost:1234/v1
+paths:
+  /web:
+    delete:
+      operationId: close
+      responses:
+        "204":
+          description: No Content
+      summary: Close the app
+      tags:
+      - Web App
+    get:
+      operationId: openUrl
+      parameters:
+      - example: https://example.com/
+        explode: true
+        in: query
+        name: url
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          description: OK
+      summary: Open a resource URL
+      tags:
+      - Web App
+components:
+  schemas: {}
+

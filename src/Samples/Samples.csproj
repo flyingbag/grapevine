@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Grapevine\Grapevine.csproj" />
+    <ProjectReference Include="..\Samples.OpenAPI\WebApp\src\WebApp\WebApp.csproj" />
   </ItemGroup>
 
   <ItemGroup>

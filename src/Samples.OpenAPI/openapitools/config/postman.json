@@ -1,0 +1,6 @@
+{
+  "inputSpec": "openapi.yaml",
+  "generatorName": "postman-collection",
+  "outputDir": "WebApp",
+  "requestParameterGeneration": true
+}
