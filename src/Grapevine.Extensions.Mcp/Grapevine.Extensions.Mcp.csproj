@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0;net6.0;net7.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+    <PackageId>Grapevine.Extensions.Mcp</PackageId>
+    <Description>ASP.NET Core extensions for the C# Model Context Protocol (MCP) SDK.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsAotCompatible>true</IsAotCompatible>
+    <LangVersion>12</LangVersion>
+    <RootNamespace>ModelContextProtocol.AspNetCore</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.0-preview.3.25171.5" />
+    <PackageReference Include="ModelContextProtocol" Version="0.1.0-preview.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Grapeseed\Grapeseed.csproj" />
+    <ProjectReference Include="..\Grapevine\Grapevine.csproj" />
+  </ItemGroup>
+
+</Project>
