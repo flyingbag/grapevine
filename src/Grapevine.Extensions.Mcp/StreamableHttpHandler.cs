@@ -115,11 +115,11 @@ internal sealed class StreamableHttpHandler(
             return;
         }
 
-        // if (!httpMcpSession.HasSameUserId(context.User))
-        // {
-        //     await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
-        //     return;
-        // }
+        if (!httpMcpSession.HasSameUserId(context.Advanced.User))
+        {
+            await context.Response.SendResponseAsync(HttpStatusCode.Forbidden);
+            return;
+        }
 
         string json = new StreamReader(context.Advanced.Request.InputStream).ReadToEnd();
         var message = JsonSerializer.Deserialize<IJsonRpcMessage>(json, McpJsonUtilities.DefaultOptions);
