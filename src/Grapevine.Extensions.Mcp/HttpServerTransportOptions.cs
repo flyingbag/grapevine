@@ -1,23 +1,28 @@
-﻿using ModelContextProtocol.Server;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Grapevine.Extensions.Mcp;
+using ModelContextProtocol.Server;
 
-/// <summary>
-/// Configuration options for <see cref="M:McpEndpointRouteBuilderExtensions.MapMcp"/>.
-/// which implements the Streaming HTTP transport for the Model Context Protocol.
-/// See the protocol specification for details on the Streamable HTTP transport. <see href="https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http"/>
-/// </summary>
-public class HttpServerTransportOptions
+namespace Grapevine.Extensions.Mcp
 {
     /// <summary>
-    /// Gets or sets an optional asynchronous callback to configure per-session <see cref="McpServerOptions"/>
-    /// with access to the <see cref="HttpContext"/> of the request that initiated the session.
+    /// Configuration options for <see cref="M:McpEndpointRouteBuilderExtensions.MapMcp"/>.
+    /// which implements the Streaming HTTP transport for the Model Context Protocol.
+    /// See the protocol specification for details on the Streamable HTTP transport. <see href="https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http"/>
     /// </summary>
-    public Func<HttpContext, McpServerOptions, CancellationToken, Task>? ConfigureSessionOptions { get; set; }
+    public class HttpServerTransportOptions
+    {
+        /// <summary>
+        /// Gets or sets an optional asynchronous callback to configure per-session <see cref="McpServerOptions"/>
+        /// with access to the <see cref="HttpContext"/> of the request that initiated the session.
+        /// </summary>
+        public Func<HttpContext, McpServerOptions, CancellationToken, Task>? ConfigureSessionOptions { get; set; }
 
-    /// <summary>
-    /// Gets or sets an optional asynchronous callback for running new MCP sessions manually.
-    /// This is useful for running logic before a sessions starts and after it completes.
-    /// </summary>
-    public Func<HttpContext, IMcpServer, CancellationToken, Task>? RunSessionHandler { get; set; }
+        /// <summary>
+        /// Gets or sets an optional asynchronous callback for running new MCP sessions manually.
+        /// This is useful for running logic before a sessions starts and after it completes.
+        /// </summary>
+        public Func<HttpContext, IMcpServer, CancellationToken, Task>? RunSessionHandler { get; set; }
+    }
 }
