@@ -47,6 +47,7 @@ namespace Grapevine.Tests
         {
             var response = await _client.GetAsync("/mcp", HttpCompletionOption.ResponseHeadersRead);
             response.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK);
+            response.Content.Headers.ContentType.ShouldNotBeNull();
             response.Content.Headers.ContentType.MediaType.ShouldBe("text/event-stream");
         }
 
@@ -55,6 +56,7 @@ namespace Grapevine.Tests
         {
             var response = await _client.GetAsync("/mcp/sse", HttpCompletionOption.ResponseHeadersRead);
             response.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK);
+            response.Content.Headers.ContentType.ShouldNotBeNull();
             response.Content.Headers.ContentType.MediaType.ShouldBe("text/event-stream");
         }
 
