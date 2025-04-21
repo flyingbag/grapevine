@@ -1,14 +1,20 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Grapevine.Extensions.Mcp;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging.Abstractions;
+using ModelContextProtocol.Client;
+using ModelContextProtocol.Protocol.Transport;
+using ModelContextProtocol.Server;
 
 using Xunit;
 using Shouldly;
@@ -27,7 +33,6 @@ namespace Grapevine.Tests
             builder.Services.AddMcpServer()
                 .WithHttpTransport()
                 .WithToolsFromAssembly();
-            // Register a no-op host lifetime so StreamableHttpHandler can resolve IHostApplicationLifetime during tests
             builder.Services.TryAddSingleton<IHostApplicationLifetime, NullHostApplicationLifetime>();
             _server = builder.Build();
             _server.Prefixes.Add($"http://localhost:{port}/");
@@ -68,7 +73,24 @@ namespace Grapevine.Tests
             response.StatusCode.ShouldBe(System.Net.HttpStatusCode.NotFound);
         }
 
-        private static int GetFreePort()
+        [Fact]
+        public async Task EchoTool_CanBeCalledOverHttp()
+        {
+            // Arrange: create and connect MCP client
+            var mcpClient = await ConnectMcpClientAsync();
+
+            // Act: call the Echo tool
+            var echoResponse = await mcpClient.CallToolAsync(
+                "Echo",
+                new Dictionary<string, object> { ["message"] = "from client!" },
+                cancellationToken: CancellationToken.None);
+
+            // Assert: verify single text result
+            var textContent = Assert.Single(echoResponse.Content, c => c.Type == "text");
+            textContent.Text.ShouldBe("hello from client!");
+        }
+
+        private int GetFreePort()
         {
             var listener = new TcpListener(IPAddress.Loopback, 0);
             listener.Start();
@@ -76,6 +98,30 @@ namespace Grapevine.Tests
             listener.Stop();
             return port;
         }
+
+        private async Task<IMcpClient> ConnectMcpClientAsync()
+        {
+            Debug.Assert(_client.BaseAddress != null);
+            return await McpClientFactory.CreateAsync(
+                new SseClientTransport(
+                    new SseClientTransportOptions
+                    {
+                        Endpoint = new Uri(_client.BaseAddress, "mcp/sse"),
+                        Name = "Test Server"
+                    },
+                    _client,
+                    NullLoggerFactory.Instance),
+                clientOptions: null,
+                loggerFactory: NullLoggerFactory.Instance,
+                cancellationToken: CancellationToken.None);
+        }
+    }
+    
+    [McpServerToolType]
+    public sealed class EchoTool
+    {
+        [McpServerTool, Description("Echoes the input back to the client.")]
+        public static string Echo(string message) => $"hello {message}";
     }
 
     internal class NullHostApplicationLifetime : IHostApplicationLifetime
