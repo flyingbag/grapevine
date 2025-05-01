@@ -117,11 +117,17 @@ namespace Grapevine.Tests
         }
     }
     
-    [McpServerToolType]
-    public sealed class EchoTool
+    public abstract class EchoToolBase
     {
         [McpServerTool, Description("Echoes the input back to the client.")]
-        public static string Echo(string message) => $"hello {message}";
+        public abstract string Echo(string message);
+    }
+
+    [McpServerToolType]
+    public class EchoTool : EchoToolBase
+    {
+        public override string Echo(string message) => $"hello {message}";
+
     }
 
     internal class NullHostApplicationLifetime : IHostApplicationLifetime
