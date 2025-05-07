@@ -12,14 +12,13 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IsAotCompatible>true</IsAotCompatible>
     <LangVersion>8</LangVersion>
-    <RootNamespace>ModelContextProtocol.AspNetCore</RootNamespace>
+    <RootNamespace>Grapevine.Extensions.Mcp</RootNamespace>
     <Version>5.0.2</Version>
     <Authors>Gao Yang</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <RepositoryUrl>https://github.com/scottoffen/grapevine</RepositoryUrl>
+    <RepositoryUrl>https://github.com/flyingbag/grapevine</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageProjectUrl>https://scottoffen.github.io/grapevine/</PackageProjectUrl>
     <PackageIcon>grapevine.png</PackageIcon>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
