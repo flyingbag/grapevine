@@ -8,10 +8,14 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Grapevine.Extensions.Mcp;
+
+using Microsoft.Extensions.AI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
+
+using ModelContextProtocol;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol.Transport;
 using ModelContextProtocol.Server;
@@ -32,6 +36,7 @@ namespace Grapevine.Tests
             var builder = RestServerBuilder.UseDefaults();
             builder.Services.AddMcpServer()
                 .WithHttpTransport()
+                .WithPromptsFromAssembly()
                 .WithToolsFromAssembly();
             builder.Services.TryAddSingleton<IHostApplicationLifetime, NullHostApplicationLifetime>();
             _server = builder.Build();
@@ -48,7 +53,7 @@ namespace Grapevine.Tests
         }
 
         [Fact]
-        public async Task GetMcp_ReturnsEventStream()
+        public async Task GetMcp_ShouldReturnEventStream()
         {
             var response = await _client.GetAsync("/mcp", HttpCompletionOption.ResponseHeadersRead);
             response.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK);
@@ -57,7 +62,7 @@ namespace Grapevine.Tests
         }
 
         [Fact]
-        public async Task GetMcpSse_ReturnsEventStream()
+        public async Task GetMcpSse_ShouldReturnEventStream()
         {
             var response = await _client.GetAsync("/mcp/sse", HttpCompletionOption.ResponseHeadersRead);
             response.StatusCode.ShouldBe(System.Net.HttpStatusCode.OK);
@@ -66,11 +71,30 @@ namespace Grapevine.Tests
         }
 
         [Fact]
-        public async Task InvalidRoute_ReturnsNotFound()
+        public async Task InvalidRoute_ShouldReturnNotFound()
         {
             // Any path other than /mcp or /mcp/sse should return 404
             var response = await _client.GetAsync("/invalid", HttpCompletionOption.ResponseHeadersRead);
             response.StatusCode.ShouldBe(System.Net.HttpStatusCode.NotFound);
+        }
+
+        [Fact]
+        public async Task ReturnsChatMessages_CanBeCalledOverHttp()
+        {
+            // Arrange: create and connect MCP client
+            var mcpClient = await ConnectMcpClientAsync();
+
+            // Act: call the ReturnsChatMessages prompt
+            var promptResult = await mcpClient.GetPromptAsync(
+                "ReturnsChatMessages",
+                new Dictionary<string, object> { ["message"] = "test" },
+                cancellationToken: CancellationToken.None);
+
+            // Assert: convert to ChatMessage[] and verify content
+            var chatMessages = promptResult.ToChatMessages();
+            chatMessages.Count.ShouldBe(2);
+            chatMessages[0].Text.ShouldBe("The prompt is: test");
+            chatMessages[1].Text.ShouldBe("Summarize.");
         }
 
         [Fact]
@@ -117,6 +141,22 @@ namespace Grapevine.Tests
         }
     }
     
+    public abstract class SimplePromptBase
+    {
+        [McpServerPrompt, Description("Returns chat messages")]
+        public abstract ChatMessage[] ReturnsChatMessages([Description("The first parameter")] string message);
+    }
+    
+    [McpServerPromptType]
+    public class SimplePrompt : SimplePromptBase
+    {
+        public override ChatMessage[] ReturnsChatMessages(string message) =>
+        [
+            new(ChatRole.User, $"The prompt is: {message}"),
+            new(ChatRole.Assistant, "Summarize."),
+        ];
+    }
+
     public abstract class EchoToolBase
     {
         [McpServerTool, Description("Echoes the input back to the client.")]

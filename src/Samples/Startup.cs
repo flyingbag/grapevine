@@ -41,6 +41,7 @@ namespace Samples
             // Uncomment the following lines to register and configure the MCP server
             //     services.AddMcpServer()
             //         .WithHttpTransport()
+            //         .WithPromptsFromAssembly()
             //         .WithToolsFromAssembly();
         }
 

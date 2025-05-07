@@ -49,6 +49,7 @@ class Program
         var builder = new RestServerBuilder(
             services => services.AddMcpServer()
                                 .WithHttpTransport()
+                                .WithPromptsFromAssembly()
                                 .WithToolsFromAssembly(),
             server => server.Prefixes.Add("http://localhost:3001/")
         );
